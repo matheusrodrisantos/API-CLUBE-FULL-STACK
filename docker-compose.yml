@@ -1,0 +1,57 @@
+services:
+    api_clube:
+        container_name: api_clube
+        build:
+            context: .
+            dockerfile: Dockerfile
+        restart: unless-stopped
+        working_dir: /var/www/
+        volumes:
+            - ./:/var/www
+        networks:
+            - api_clube-network
+    # nginx
+    api_clube-nginx:
+        container_name: api_clube-nginx
+        image: nginx:alpine
+        restart: unless-stopped
+        ports:
+            - 8082:80
+        volumes:
+            - ./:/var/www
+            - ./docker/nginx/:/etc/nginx/conf.d/
+        networks:
+            - api_clube-network
+     # db mysql ${DB_DATABASE} //Busca do arquivo .env
+    mysql_integrator:
+        container_name: api_clube-mysql
+        image: mysql:5.7.22
+        restart: unless-stopped
+        environment:
+            MYSQL_DATABASE: ${DB_DATABASE}
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+            MYSQL_PASSWORD: ${DB_PASSWORD}
+            MYSQL_USER: ${DB_USERNAME}
+        volumes:
+            - ./.docker/mysql/dbdata:/var/lib/mysql
+        ports:
+            - 3308:3306
+        networks:
+            - api_clube-network
+
+    api_clube-phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: api_clube-phpmyadmin
+        links:
+            - mysql_integrator
+        restart: always
+        environment:
+            - PMA_ARBITRARY=1
+        ports:
+            - 8891:80
+        networks:
+            - api_clube-network
+
+networks:
+    api_clube-network:
+        driver: bridge
