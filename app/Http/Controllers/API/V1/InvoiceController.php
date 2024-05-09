@@ -52,12 +52,10 @@ class InvoiceController extends Controller
     /**
     * Display the specified resource.
     */
-    public function show(string $id){
+    public function show(Invoice $invoice){
+        return new InvoiceResource($invoice);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Invoice $invoice){
 
         $validator=Validator::make($request->all(),[
@@ -96,8 +94,13 @@ class InvoiceController extends Controller
     /**
     * Remove the specified resource from storage.
     */
-    public function destroy(string $id)
+    public function destroy(Invoice $invoice)
     {
-        //
+        $deleted=$invoice->delete();
+        
+        if($deleted){
+            return $this->response('Invoice deleted',200);
+        }
+        return $this->error('Invoice not deleted',400);
     }
 }
