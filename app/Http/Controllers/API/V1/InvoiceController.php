@@ -13,16 +13,14 @@ class InvoiceController extends Controller
 {
     use HttpResponses;
 
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(){
-        return InvoiceResource::collection(Invoice::with('user')->get());
-    }
 
-    /**
-     * Store a newly created resource in storage.
-    */
+    public function index(Request $request){
+
+        return (new Invoice())->filter($request);
+        
+    } 
+
+
     public function store(Request $request){
 
         $validator=Validator::make($request->all(),[
@@ -49,9 +47,6 @@ class InvoiceController extends Controller
         return $this->error('Invoice not created',400);
     }
 
-    /**
-    * Display the specified resource.
-    */
     public function show(Invoice $invoice){
         return new InvoiceResource($invoice);
     }
@@ -91,9 +86,6 @@ class InvoiceController extends Controller
         return $this->error('Invoice not updated', 400);
     }
 
-    /**
-    * Remove the specified resource from storage.
-    */
     public function destroy(Invoice $invoice)
     {
         $deleted=$invoice->delete();
