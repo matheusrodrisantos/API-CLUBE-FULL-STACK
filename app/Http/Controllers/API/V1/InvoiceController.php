@@ -9,19 +9,31 @@ use App\Traits\HttpResponses;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class InvoiceController extends Controller
+
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+
+
+class InvoiceController extends Controller implements HasMiddleware
 {
     use HttpResponses;
 
+    public static function middleware():array
+    {
+        return[
+            new Middleware('auth:sanctum',only:['store'])
+        ];
+    }
 
-    public function index(Request $request){
-
+    public function index(Request $request)
+    {
         return (new Invoice())->filter($request);
-        
     } 
 
+    
 
-    public function store(Request $request){
+    public function store(Request $request)
+    {
 
         $validator=Validator::make($request->all(),[
             'user_id'=>'required',
