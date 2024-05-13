@@ -17,7 +17,8 @@ Route::prefix('v1')->group(function(){
         Route::prefix('users')->group(function(){
             Route::get('/',[UserController::class,'index']);
             Route::get('/{user}',[UserController::class,'show']);
-        });    
+        });
+        Route::post('/logout',[AuthController::class, 'logout']);    
     });
     
     Route::apiResource('invoices',InvoiceController::class);
